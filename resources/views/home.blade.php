@@ -31,7 +31,7 @@
                     :title="$event->judul" 
                     :date="$event->tanggal_waktu" 
                     :location="$event->lokasi"
-                    :price="$event->tikets_min_harga" 
+                    :price="$event->tickets_min_harga" 
                     :image="$event->gambar" 
                     :href="route('events.show', $event)" />
             @endforeach
