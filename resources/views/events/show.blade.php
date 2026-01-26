@@ -208,16 +208,24 @@
 
   {{-- CHECKOUT  --}}
   <script>
-    confirmCheckout.onclick = async () => {
-      confirmCheckout.disabled = true;
-      confirmCheckout.innerText = 'Memproses...';
+  confirmCheckout.onclick = async () => {
 
-      const items = [];
-      Object.values(tickets).forEach(t => {
-        const q = Number(document.getElementById('qty-'+t.id).value || 0);
-        if (q > 0) items.push({ tiket_id: t.id, jumlah: q });
-      });
+    //CEK LOGIN DI FRONTEND
+    @if(!auth()->check())
+      window.location.href = "{{ route('login') }}";
+      return;
+    @endif
 
+    confirmCheckout.disabled = true;
+    confirmCheckout.innerText = 'Memproses...';
+
+    const items = [];
+    Object.values(tickets).forEach(t => {
+      const q = Number(document.getElementById('qty-'+t.id).value || 0);
+      if (q > 0) items.push({ tiket_id: t.id, jumlah: q });
+    });
+
+    try {
       const res = await fetch("{{ route('orders.store') }}", {
         method: 'POST',
         headers: {
@@ -230,8 +238,20 @@
         })
       });
 
+      // JIKA SESSION HABIS / BELUM LOGIN
+      if (res.status === 401) {
+        window.location.href = "{{ route('login') }}";
+        return;
+      }
+
       const data = await res.json();
       window.location.href = data.redirect;
-    };
-  </script>
+
+    } catch (e) {
+      alert('Terjadi kesalahan, silakan coba lagi.');
+      confirmCheckout.disabled = false;
+      confirmCheckout.innerText = 'Konfirmasi';
+    }
+  };
+</script>
 </x-layouts.app>

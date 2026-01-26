@@ -7,12 +7,25 @@
     <div class="space-y-4">
       @forelse($orders as $order)
         <article class="card lg:card-side bg-base-100 shadow-md overflow-hidden">
-          <figure class="lg:w-48">
-            <img
-              src="{{ $order->event?->gambar ? asset($order->event->gambar) : 'https://img.daisyui.com/images/stock/photo-1606107557195-0e29a4b5b4aa.webp' }}"
-              alt="{{ $order->event?->judul ?? 'Event' }}" class="w-full h-full object-cover" />
-          </figure>
+          @php
+              $gambar = $order->event?->gambar;
 
+              if ($gambar) {
+                  $imageUrl = str_starts_with($gambar, 'storage/')
+                      ? asset($gambar)
+                      : asset('storage/' . $gambar);
+              } else {
+                  $imageUrl = 'https://img.daisyui.com/images/stock/photo-1606107557195-0e29a4b5b4aa.webp';
+              }
+          @endphp
+
+          <figure class="lg:w-48">
+              <img
+                  src="{{ $imageUrl }}"
+                  alt="{{ $order->event?->judul ?? 'Event' }}"
+                  class="w-full h-full object-cover"
+              />
+          </figure>
           <div class="card-body flex justify-between ">
             <div>
               <div class="font-bold">Order #{{ $order->id }}</div>
